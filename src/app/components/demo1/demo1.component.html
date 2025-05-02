@@ -1,0 +1,26 @@
+<p>demo1 works!</p>
+<button (click)="triggerPrint()">Print PDF (Mobile)</button>
+<div>
+
+  <!-- <ng2-pdfjs-viewer
+  #pdfIframe
+      [pdfSrc]="pdfSrc"
+      viewerId="myPdfViewer"
+      [download]="true"
+
+      (onDocumentLoad)="handleDocumentLoad($event)"
+
+      style="display: block; width: 100%; height: 100vh;"
+      [showSpinner]="showViewerSpinner"
+      >
+    </ng2-pdfjs-viewer> -->
+    <ng2-pdfjs-viewer
+  #pdfViewer
+  [pdfSrc]="pdfSrc"
+  [showSpinner]="showViewerSpinner"
+  (onDocumentLoad)="handleDocumentLoad($event)"
+  style="display: block; width: 100%; height: 100vh;"
+></ng2-pdfjs-viewer>
+
+
+    </div>
