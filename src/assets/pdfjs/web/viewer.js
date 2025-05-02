@@ -15663,6 +15663,130 @@
     });
   }
 
+  // function PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n) {
+  //   this.pdfDocument = pdfDocument;
+  //   this.pagesOverview = pagesOverview;
+  //   this.printContainer = printContainer;
+  //   this.l10n = l10n || _ui_utils.NullL10n;
+  //   this.disableCreateObjectURL = pdfDocument.loadingParams['disableCreateObjectURL'];
+  //   this.currentPage = -1;
+  //   this.scratchCanvas = document.createElement('canvas');
+  // }
+
+  // PDFPrintService.prototype = {
+  //   layout: function layout() {
+  //     this.throwIfInactive();
+  //     var body = document.querySelector('body');
+  //     body.setAttribute('data-pdfjsprinting', true);
+  //     var hasEqualPageSizes = this.pagesOverview.every(function (size) {
+  //       return size.width === this.pagesOverview[0].width && size.height === this.pagesOverview[0].height;
+  //     }, this);
+
+  //     if (!hasEqualPageSizes) {
+  //       console.warn('Not all pages have the same size. The printed ' + 'result may be incorrect!');
+  //     }
+
+  //     this.pageStyleSheet = document.createElement('style');
+  //     var pageSize = this.pagesOverview[0];
+  //     this.pageStyleSheet.textContent = '@supports ((size:A4) and (size:1pt 1pt)) {' + '@page { size: ' + pageSize.width + 'pt ' + pageSize.height + 'pt;}' + '}';
+  //     body.appendChild(this.pageStyleSheet);
+  //   },
+  //   destroy: function destroy() {
+  //     if (activeService !== this) {
+  //       return;
+  //     }
+
+  //     this.printContainer.textContent = '';
+
+  //     if (this.pageStyleSheet) {
+  //       this.pageStyleSheet.remove();
+  //       this.pageStyleSheet = null;
+  //     }
+
+  //     this.scratchCanvas.width = this.scratchCanvas.height = 0;
+  //     this.scratchCanvas = null;
+  //     activeService = null;
+  //     ensureOverlay().then(function () {
+  //       if (overlayManager.active !== 'printServiceOverlay') {
+  //         return;
+  //       }
+
+  //       overlayManager.close('printServiceOverlay');
+  //     });
+  //   },
+  //   renderPages: function renderPages() {
+  //     var _this = this;
+
+  //     var pageCount = this.pagesOverview.length;
+
+  //     var renderNextPage = function renderNextPage(resolve, reject) {
+  //       _this.throwIfInactive();
+
+  //       if (++_this.currentPage >= pageCount) {
+  //         renderProgress(pageCount, pageCount, _this.l10n);
+  //         resolve();
+  //         return;
+  //       }
+
+  //       var index = _this.currentPage;
+  //       renderProgress(index, pageCount, _this.l10n);
+  //       renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index])  .then(_this.useRenderedPage.bind(_this)).then(function () {
+  //      // renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index]).then(_this.useRenderedPage.bind(_this)).then(function () {
+  //         renderNextPage(resolve, reject);
+  //       }, reject);
+  //     };
+
+  //     return new Promise(renderNextPage);
+  //   },
+  //    useRenderedPage: function useRenderedPage() {
+  //   //   console.log(printItem)
+  //   //   this.throwIfInactive();
+  //   //   var img = document.createElement('img');
+  //   //   img.style.width = printItem.width;
+  //   //   img.style.height = printItem.height;
+  //   //   var scratchCanvas = this.scratchCanvas;
+
+  //   //   if ('toBlob' in scratchCanvas && !this.disableCreateObjectURL) {
+  //   //     scratchCanvas.toBlob(function (blob) {
+  //   //       img.src = _pdfjsLib.URL.createObjectURL(blob);
+  //   //     });
+  //   //   } else {
+  //   //     img.src = scratchCanvas.toDataURL();
+  //   //   }
+
+  //   //   var wrapper = document.createElement('div');
+  //   //   wrapper.appendChild(img);
+  //   //   this.printContainer.appendChild(wrapper);
+  //   //   return new Promise(function (resolve, reject) {
+  //   //     img.onload = resolve;
+  //   //     img.onerror = reject;
+  //   //   });
+
+  //     this.throwIfInactive();
+  //     const img = document.createElement("img");
+  //   //   var img = document.createElement('img');
+  //    //  img.style.width = printItem.width;
+  //     // img.style.height = printItem.height;
+  //     // var scratchCanvas = this.scratchCanvas;
+
+  //     const scratchCanvas = this.scratchCanvas;
+  //     if ("toBlob" in scratchCanvas) {
+  //       scratchCanvas.toBlob(function (blob) {
+  //         img.src = URL.createObjectURL(blob);
+  //       });
+  //     } else {
+  //       img.src = scratchCanvas.toDataURL();
+  //     }
+  //     const wrapper = document.createElement("div");
+  //     wrapper.className = "printedPage";
+  //     wrapper.append(img);
+  //     this.printContainer.append(wrapper);
+  //     return new Promise(function (resolve, reject) {
+  //       img.onload = resolve;
+  //       img.onerror = reject;
+  //     });
+
+  //   },
   function PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n) {
     this.pdfDocument = pdfDocument;
     this.pagesOverview = pagesOverview;
@@ -15730,62 +15854,36 @@
 
         var index = _this.currentPage;
         renderProgress(index, pageCount, _this.l10n);
-        renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index])  .then(_this.useRenderedPage.bind(_this)).then(function () {
-       // renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index]).then(_this.useRenderedPage.bind(_this)).then(function () {
+        renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index]).then(_this.useRenderedPage.bind(_this)).then(function () {
           renderNextPage(resolve, reject);
         }, reject);
       };
 
       return new Promise(renderNextPage);
     },
-     useRenderedPage: function useRenderedPage() {
-    //   console.log(printItem)
-    //   this.throwIfInactive();
-    //   var img = document.createElement('img');
-    //   img.style.width = printItem.width;
-    //   img.style.height = printItem.height;
-    //   var scratchCanvas = this.scratchCanvas;
-
-    //   if ('toBlob' in scratchCanvas && !this.disableCreateObjectURL) {
-    //     scratchCanvas.toBlob(function (blob) {
-    //       img.src = _pdfjsLib.URL.createObjectURL(blob);
-    //     });
-    //   } else {
-    //     img.src = scratchCanvas.toDataURL();
-    //   }
-
-    //   var wrapper = document.createElement('div');
-    //   wrapper.appendChild(img);
-    //   this.printContainer.appendChild(wrapper);
-    //   return new Promise(function (resolve, reject) {
-    //     img.onload = resolve;
-    //     img.onerror = reject;
-    //   });
-
+    useRenderedPage: function useRenderedPage(printItem) {
+      console.log(printItem)
       this.throwIfInactive();
-      const img = document.createElement("img");
-    //   var img = document.createElement('img');
-     //  img.style.width = printItem.width;
-      // img.style.height = printItem.height;
-      // var scratchCanvas = this.scratchCanvas;
+      var img = document.createElement('img');
+      img.style.width = printItem.width;
+      img.style.height = printItem.height;
+      var scratchCanvas = this.scratchCanvas;
 
-      const scratchCanvas = this.scratchCanvas;
-      if ("toBlob" in scratchCanvas) {
+      if ('toBlob' in scratchCanvas && !this.disableCreateObjectURL) {
         scratchCanvas.toBlob(function (blob) {
-          img.src = URL.createObjectURL(blob);
+          img.src = _pdfjsLib.URL.createObjectURL(blob);
         });
       } else {
         img.src = scratchCanvas.toDataURL();
       }
-      const wrapper = document.createElement("div");
-      wrapper.className = "printedPage";
-      wrapper.append(img);
-      this.printContainer.append(wrapper);
+
+      var wrapper = document.createElement('div');
+      wrapper.appendChild(img);
+      this.printContainer.appendChild(wrapper);
       return new Promise(function (resolve, reject) {
         img.onload = resolve;
         img.onerror = reject;
       });
-
     },
     performPrint: function performPrint() {
       // var _this2 = this;
