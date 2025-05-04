@@ -15886,30 +15886,202 @@
       });
     },
     performPrint: function performPrint() {
-      // var _this2 = this;
+        //        this.throwIfInactive();
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+        //     print.call(window);
+        //     const isIOS = navigator.platform && ["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(navigator.platform) || navigator.userAgent.includes("Mac") && "ontouchend" in document;
+        //     setTimeout(resolve, isIOS ? 1500 : 20);
+        //   }, 0);
+        // });
 
-      // this.throwIfInactive();
-      // return new Promise(function (resolve) {
-      //   setTimeout(function () {
-      //     if (!_this2.active) {
-      //       resolve();
-      //       return;
-      //     }
 
-      //     print.call(window);
-      //     setTimeout(resolve, 20);
-      //   }, 0);
-      // });
-      this.throwIfInactive();
+
+
+
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+        //                   (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+
+        //     const isMobileChrome = isIOS && /CriOS/.test(navigator.userAgent);
+
+        //     if (isMobileChrome) {
+        //       // Fallback: Open current content in new tab and print
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked! Please allow popups to print.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(document.documentElement.innerHTML); // Or custom printable content
+        //       printWindow.document.close();
+
+        //       printWindow.focus();
+        //       setTimeout(() => {
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, 0);
+
+        //     } else {
+        //       // Desktop or Safari iOS: use original logic
+        //       print.call(window);
+        //       setTimeout(resolve, isIOS ? 1500 : 20);
+        //     }
+        //   }, 0);
+        // });
+
+
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+        //                   (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+        //     const isMobileChrome = isIOS && /CriOS/.test(navigator.userAgent);
+
+        //     if (isMobileChrome) {
+        //       const printContainer = document.querySelector('#printContainer'); // Your PDF container
+
+        //       if (!printContainer) {
+        //         alert("Printable content not found.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked! Please allow popups to print.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 page-break-after: always;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       // Wait for a short duration to allow rendering
+        //       // Then trigger print (on mobile this delay is key)
+        //       const tryPrint = () => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       };
+
+        //       // Use a longer delay to wait for canvas draw (adjust if needed)
+        //       setTimeout(tryPrint, 1000); // 1 second
+        //     } else {
+        //       // Desktop or iOS Safari
+        //       print.call(window);
+        //       setTimeout(resolve, isIOS ? 1500 : 20);
+        //     }
+        //   }, 0);
+        // });
+
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
               resolve();
               return;
             }
-            print.call(window);
-            const isIOS = navigator.platform && ["iPad Simulator", "iPhone Simulator", "iPod Simulator", "iPad", "iPhone", "iPod"].includes(navigator.platform) || navigator.userAgent.includes("Mac") && "ontouchend" in document;
-            setTimeout(resolve, isIOS ? 1500 : 20);
+
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            // Detect mobile or tablet devices
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
+                         (userAgent.includes("Mac") && "ontouchend" in document);
+
+            const isAndroid = /Android/.test(userAgent);
+            const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+            const isMobileChrome = /Chrome/.test(userAgent) && isMobileOrTablet;
+
+            const printContainer = document.querySelector('#printContainer');
+
+            if ((isIOS || isMobileChrome) && printContainer) {
+              const printWindow = window.open('', '_blank');
+              if (!printWindow) {
+                alert("Popup blocked! Please allow popups to print.");
+                resolve();
+                return;
+              }
+
+              printWindow.document.write(`
+                <html>
+                  <head>
+                    <title>Print PDF</title>
+                    <style>
+                      body {
+                        margin: 0;
+                        padding: 0;
+                        background: white;
+                      }
+                      canvas {
+                        display: block;
+                        page-break-after: always;
+                        width: 100% !important;
+                        height: auto !important;
+                      }
+                    </style>
+                  </head>
+                  <body>${printContainer.innerHTML}</body>
+                </html>
+              `);
+              printWindow.document.close();
+
+              // Delay to allow canvas rendering
+              const renderDelay = (isIOS || isAndroid) ? 1500 : 1000;
+
+              setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+                setTimeout(() => {
+                  printWindow.close();
+                  resolve();
+                }, 1500);
+              }, renderDelay);
+            } else {
+              // Desktop
+              print.call(window);
+              setTimeout(resolve, isIOS ? 1500 : 20);
+            }
           }, 0);
         });
 
