@@ -16015,6 +16015,88 @@
         //   }, 0);
         // });
 
+
+
+
+
+//working on android and ios crome
+
+
+
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+        //     // Detect mobile or tablet devices
+        //     const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
+        //                  (userAgent.includes("Mac") && "ontouchend" in document);
+
+        //     const isAndroid = /Android/.test(userAgent);
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+        //     const isMobileChrome = /Chrome/.test(userAgent) && isMobileOrTablet;
+
+        //     const printContainer = document.querySelector('#printContainer');
+
+        //     if ((isIOS || isMobileChrome) && printContainer) {
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked! Please allow popups to print.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 page-break-after: always;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       // Delay to allow canvas rendering
+        //       const renderDelay = (isIOS || isAndroid) ? 1500 : 1000;
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, renderDelay);
+        //     } else {
+        //       // Desktop
+        //       print.call(window);
+        //       setTimeout(resolve, isIOS ? 1500 : 20);
+        //     }
+        //   }, 0);
+        // });
+
+
+
+
+
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16024,18 +16106,23 @@
 
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-            // Detect mobile or tablet devices
+            // Detect platforms
             const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
                          (userAgent.includes("Mac") && "ontouchend" in document);
-
             const isAndroid = /Android/.test(userAgent);
             const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
 
+            const isIOSChrome = /CriOS/.test(userAgent);
             const isMobileChrome = /Chrome/.test(userAgent) && isMobileOrTablet;
 
             const printContainer = document.querySelector('#printContainer');
 
-            if ((isIOS || isMobileChrome) && printContainer) {
+            if (isIOS && !isIOSChrome) {
+              // ✅ iOS Safari — print directly (new tab print blocked or unreliable)
+              print.call(window);
+              setTimeout(resolve, 1500);
+            } else if ((isMobileChrome || isIOSChrome) && printContainer) {
+              // ✅ Android Chrome OR iOS Chrome (CriOS) — use new window
               const printWindow = window.open('', '_blank');
               if (!printWindow) {
                 alert("Popup blocked! Please allow popups to print.");
@@ -16066,7 +16153,6 @@
               `);
               printWindow.document.close();
 
-              // Delay to allow canvas rendering
               const renderDelay = (isIOS || isAndroid) ? 1500 : 1000;
 
               setTimeout(() => {
@@ -16078,7 +16164,7 @@
                 }, 1500);
               }, renderDelay);
             } else {
-              // Desktop
+              // ✅ Desktop — default logic
               print.call(window);
               setTimeout(resolve, isIOS ? 1500 : 20);
             }
