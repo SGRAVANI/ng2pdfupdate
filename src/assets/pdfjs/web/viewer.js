@@ -16636,12 +16636,12 @@
                   printWindow.close();
                   resolve();
                 }, 1500);
-              }, isMobileOrTablet ? 1500 : 800);
+              }, isMobileOrTablet ? 1000 : 800);
             };
 
             // Ensure the canvas is ready before opening the print window
             if (isMobileOrTablet) {
-              waitUntilCanvasRendered(15000).then(openPrintWindow); // Increased timeout to 15 seconds
+              waitUntilCanvasRendered(8000).then(openPrintWindow); // Increased timeout to 15 seconds
             } else {
               openPrintWindow();
             }
