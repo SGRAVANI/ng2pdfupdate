@@ -16095,8 +16095,269 @@
 
 
 
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        //     const isIOS = /iPad|iPhone|iPod/.test(userAgent) || (userAgent.includes("Mac") && "ontouchend" in document);
+        //     const isAndroid = /Android/.test(userAgent);
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+        //     const isIOSChrome = /CriOS/.test(userAgent);
+        //     const isMobileChrome = /Chrome/.test(userAgent) && isMobileOrTablet;
+
+        //     const printContainer = document.querySelector('#printContainer');
+        //     if (!printContainer) {
+        //       alert("Print container not found.");
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+        //       return new Promise(waitResolve => {
+        //         const start = Date.now();
+        //         const interval = setInterval(() => {
+        //           const canvases = printContainer.querySelectorAll('canvas');
+        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+        //           if (allReady || Date.now() - start > maxWaitMs) {
+        //             clearInterval(interval);
+        //             waitResolve();
+        //           }
+        //         }, 300);
+        //       });
+        //     };
+
+        //     const openPrintWindow = () => {
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked. Please allow popups.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 page-break-after: always;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, isMobileOrTablet ? 1500 : 800);
+        //     };
+
+        //     if (isMobileOrTablet) {
+        //       waitUntilCanvasRendered().then(openPrintWindow);
+        //     } else {
+        //       // Desktop: use native print
+        //       print.call(window);
+        //       setTimeout(resolve, 500);
+        //     }
+        //   }, 0);
+        // });
+
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+        //     const printContainer = document.querySelector('#printContainer');
+        //     if (!printContainer) {
+        //       alert("Print container not found.");
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+        //       return new Promise(waitResolve => {
+        //         const start = Date.now();
+        //         const interval = setInterval(() => {
+        //           const canvases = printContainer.querySelectorAll('canvas');
+        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+        //           if (allReady || Date.now() - start > maxWaitMs) {
+        //             clearInterval(interval);
+        //             waitResolve();
+        //           }
+        //         }, 300);
+        //       });
+        //     };
+
+        //     const openPrintWindow = () => {
+        //       const canvases = printContainer.querySelectorAll('canvas');
+        //       canvases.forEach((canvas, index) => {
+        //         canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+        //       });
+
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked. Please allow popups.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //                 page-break-after: auto; /* fallback */
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, isMobileOrTablet ? 1500 : 800);
+        //     };
+
+        //     if (isMobileOrTablet) {
+        //       waitUntilCanvasRendered().then(openPrintWindow);
+        //     } else {
+        //       // Desktop: use native print
+        //       print.call(window);
+        //       setTimeout(resolve, 500);
+        //     }
+        //   }, 0);
+        // });
 
 
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+        //     const printContainer = document.querySelector('#printContainer');
+        //     if (!printContainer) {
+        //       alert("Print container not found.");
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+        //       return new Promise(waitResolve => {
+        //         const start = Date.now();
+        //         const interval = setInterval(() => {
+        //           const canvases = printContainer.querySelectorAll('canvas');
+        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+        //           if (allReady || Date.now() - start > maxWaitMs) {
+        //             clearInterval(interval);
+        //             waitResolve();
+        //           }
+        //         }, 300);
+        //       });
+        //     };
+
+        //     const openPrintWindow = () => {
+        //       const canvases = printContainer.querySelectorAll('canvas');
+        //       canvases.forEach((canvas, index) => {
+        //         canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+        //       });
+
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked. Please allow popups.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //                 page-break-after: auto; /* fallback */
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, isMobileOrTablet ? 1500 : 800);
+        //     };
+
+        //     if (isMobileOrTablet) {
+        //       waitUntilCanvasRendered().then(openPrintWindow);
+        //     } else {
+        //       // Desktop: use native print
+        //       print.call(window);
+        //       setTimeout(resolve, 500);
+        //     }
+        //   }, 0);
+        // });
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16105,27 +16366,41 @@
             }
 
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-            // Detect platforms
-            const isIOS = /iPad|iPhone|iPod/.test(userAgent) ||
-                         (userAgent.includes("Mac") && "ontouchend" in document);
-            const isAndroid = /Android/.test(userAgent);
             const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
 
-            const isIOSChrome = /CriOS/.test(userAgent);
-            const isMobileChrome = /Chrome/.test(userAgent) && isMobileOrTablet;
-
             const printContainer = document.querySelector('#printContainer');
+            if (!printContainer) {
+              alert("Print container not found.");
+              resolve();
+              return;
+            }
 
-            if (isIOS && !isIOSChrome) {
-              // ✅ iOS Safari — print directly (new tab print blocked or unreliable)
-              print.call(window);
-              setTimeout(resolve, 1500);
-            } else if ((isMobileChrome || isIOSChrome) && printContainer) {
-              // ✅ Android Chrome OR iOS Chrome (CriOS) — use new window
+            const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+              return new Promise(waitResolve => {
+                const start = Date.now();
+                const interval = setInterval(() => {
+                  const canvases = printContainer.querySelectorAll('canvas');
+                  const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+                  if (allReady || Date.now() - start > maxWaitMs) {
+                    clearInterval(interval);
+                    waitResolve();
+                  }
+                }, 300);
+              });
+            };
+
+            const openPrintWindow = () => {
+              if (isMobileOrTablet) {
+                const canvases = printContainer.querySelectorAll('canvas');
+                canvases.forEach((canvas, index) => {
+                  canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+                });
+              }
+
               const printWindow = window.open('', '_blank');
               if (!printWindow) {
-                alert("Popup blocked! Please allow popups to print.");
+                alert("Popup blocked. Please allow popups.");
                 resolve();
                 return;
               }
@@ -16142,7 +16417,6 @@
                       }
                       canvas {
                         display: block;
-                        page-break-after: always;
                         width: 100% !important;
                         height: auto !important;
                       }
@@ -16153,8 +16427,6 @@
               `);
               printWindow.document.close();
 
-              const renderDelay = (isIOS || isAndroid) ? 1500 : 1000;
-
               setTimeout(() => {
                 printWindow.focus();
                 printWindow.print();
@@ -16162,15 +16434,18 @@
                   printWindow.close();
                   resolve();
                 }, 1500);
-              }, renderDelay);
+              }, isMobileOrTablet ? 1500 : 800);
+            };
+
+            if (isMobileOrTablet) {
+              waitUntilCanvasRendered().then(openPrintWindow);
             } else {
-              // ✅ Desktop — default logic
+              // Desktop: use native print
               print.call(window);
-              setTimeout(resolve, isIOS ? 1500 : 20);
+              setTimeout(resolve, 500);
             }
           }, 0);
         });
-
 
     },
 
