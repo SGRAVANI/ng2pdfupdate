@@ -16452,7 +16452,6 @@
         //   }, 0);
         // });
 
-
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16470,6 +16469,10 @@
               return;
             }
 
+            // Log for debugging
+            console.log("User Agent: ", navigator.userAgent);
+            console.log("Is Mobile or Tablet: ", isMobileOrTablet);
+
             // Function to check if all canvases are rendered
             const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
               return new Promise(waitResolve => {
@@ -16480,6 +16483,7 @@
 
                   if (allReady || Date.now() - start > maxWaitMs) {
                     clearInterval(interval);
+                    console.log("All canvases are rendered.");
                     waitResolve();
                   }
                 }, 300);
@@ -16489,52 +16493,57 @@
             // Function to handle printing on mobile/tablet
             const openPrintWindow = () => {
               if (isMobileOrTablet) {
-                // For mobile/tablet devices, render content inside an iframe to trigger print dialog
-                const iframe = document.createElement('iframe');
-                iframe.style.position = 'absolute';
-                iframe.style.top = '0';
-                iframe.style.left = '0';
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                iframe.style.visibility = 'hidden';
-                document.body.appendChild(iframe);
-
-                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                iframeDoc.open();
-                iframeDoc.write(`
-                  <html>
-                    <head>
-                      <title>Print PDF</title>
-                      <style>
-                        body { margin: 0; padding: 0; background-color: white; }
-                        canvas { display: block; width: 100% !important; height: auto !important; }
-                      </style>
-                    </head>
-                    <body>
-                      ${printContainer.innerHTML}
-                    </body>
-                  </html>
-                `);
-                iframeDoc.close();
-
-                // Trigger the print dialog once the iframe content is loaded
-                iframe.onload = () => {
-                  iframe.contentWindow.print();
-                  setTimeout(() => {
-                    document.body.removeChild(iframe); // Clean up after printing
-                    resolve();
-                  }, 2000); // Allow some time for the print dialog to appear before cleanup
-                };
-              } else {
-                // For desktop, use the native print dialog
-                print.call(window);
-                setTimeout(resolve, 500);
+                // Handle canvas page break for mobile
+                const canvases = printContainer.querySelectorAll('canvas');
+                canvases.forEach((canvas, index) => {
+                  canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+                });
               }
+
+              const printWindow = window.open('', '_blank');
+              if (!printWindow) {
+                alert("Popup blocked. Please allow popups.");
+                console.log("Popup block detected on this device.");
+                resolve();
+                return;
+              }
+              console.log("Popup opened successfully.");
+
+              printWindow.document.write(`
+                <html>
+                  <head>
+                    <title>Print PDF</title>
+                    <style>
+                      body {
+                        margin: 0;
+                        padding: 0;
+                        background: white;
+                      }
+                      canvas {
+                        display: block;
+                        width: 100% !important;
+                        height: auto !important;
+                      }
+                    </style>
+                  </head>
+                  <body>${printContainer.innerHTML}</body>
+                </html>
+              `);
+              printWindow.document.close();
+
+              setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+                setTimeout(() => {
+                  printWindow.close();
+                  resolve();
+                }, 1500);
+              }, isMobileOrTablet ? 1500 : 800);
             };
 
             // Ensure the canvas is ready before opening the print window
             if (isMobileOrTablet) {
-              waitUntilCanvasRendered().then(openPrintWindow);
+              waitUntilCanvasRendered(15000).then(openPrintWindow); // Increased timeout to 15 seconds
             } else {
               openPrintWindow();
             }
