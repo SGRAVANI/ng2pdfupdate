@@ -16470,6 +16470,7 @@
               return;
             }
 
+            // Function to check if all canvases are rendered
             const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
               return new Promise(waitResolve => {
                 const start = Date.now();
@@ -16485,9 +16486,10 @@
               });
             };
 
+            // Function to handle printing on mobile/tablet
             const openPrintWindow = () => {
               if (isMobileOrTablet) {
-                // For mobile/tablet devices, render the content in an iframe
+                // For mobile/tablet devices, render content inside an iframe to trigger print dialog
                 const iframe = document.createElement('iframe');
                 iframe.style.position = 'absolute';
                 iframe.style.top = '0';
@@ -16515,22 +16517,22 @@
                 `);
                 iframeDoc.close();
 
-                // Trigger the print dialog after content is ready
+                // Trigger the print dialog once the iframe content is loaded
                 iframe.onload = () => {
                   iframe.contentWindow.print();
                   setTimeout(() => {
-                    document.body.removeChild(iframe);
+                    document.body.removeChild(iframe); // Clean up after printing
                     resolve();
-                  }, 2000); // Clean up after printing
+                  }, 2000); // Allow some time for the print dialog to appear before cleanup
                 };
               } else {
-                // For desktop devices (Windows, macOS), use native print dialog
+                // For desktop, use the native print dialog
                 print.call(window);
                 setTimeout(resolve, 500);
               }
             };
 
-            // Ensure the canvas has rendered before printing
+            // Ensure the canvas is ready before opening the print window
             if (isMobileOrTablet) {
               waitUntilCanvasRendered().then(openPrintWindow);
             } else {
