@@ -16363,6 +16363,96 @@
 
 
 
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+        //     const printContainer = document.querySelector('#printContainer');
+        //     if (!printContainer) {
+        //       alert("Print container not found.");
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+        //       return new Promise(waitResolve => {
+        //         const start = Date.now();
+        //         const interval = setInterval(() => {
+        //           const canvases = printContainer.querySelectorAll('canvas');
+        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+        //           if (allReady || Date.now() - start > maxWaitMs) {
+        //             clearInterval(interval);
+        //             waitResolve();
+        //           }
+        //         }, 300);
+        //       });
+        //     };
+
+        //     const openPrintWindow = () => {
+        //       if (isMobileOrTablet) {
+        //         const canvases = printContainer.querySelectorAll('canvas');
+        //         canvases.forEach((canvas, index) => {
+        //           canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+        //         });
+        //       }
+
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked. Please allow popups.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, isMobileOrTablet ? 1500 : 800);
+        //     };
+
+        //     if (isMobileOrTablet) {
+        //       waitUntilCanvasRendered().then(openPrintWindow);
+        //     } else {
+        //       // Desktop: use native print
+        //       print.call(window);
+        //       setTimeout(resolve, 500);
+        //     }
+        //   }, 0);
+        // });
+
+
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16397,62 +16487,57 @@
 
             const openPrintWindow = () => {
               if (isMobileOrTablet) {
-                const canvases = printContainer.querySelectorAll('canvas');
-                canvases.forEach((canvas, index) => {
-                  canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
-                });
+                // For mobile/tablet devices, render the content in an iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.position = 'absolute';
+                iframe.style.top = '0';
+                iframe.style.left = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.visibility = 'hidden';
+                document.body.appendChild(iframe);
+
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(`
+                  <html>
+                    <head>
+                      <title>Print PDF</title>
+                      <style>
+                        body { margin: 0; padding: 0; background-color: white; }
+                        canvas { display: block; width: 100% !important; height: auto !important; }
+                      </style>
+                    </head>
+                    <body>
+                      ${printContainer.innerHTML}
+                    </body>
+                  </html>
+                `);
+                iframeDoc.close();
+
+                // Trigger the print dialog after content is ready
+                iframe.onload = () => {
+                  iframe.contentWindow.print();
+                  setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    resolve();
+                  }, 2000); // Clean up after printing
+                };
+              } else {
+                // For desktop devices (Windows, macOS), use native print dialog
+                print.call(window);
+                setTimeout(resolve, 500);
               }
-
-              const printWindow = window.open('', '_blank');
-              if (!printWindow) {
-                alert("Popup blocked. Please allow popups.");
-                resolve();
-                return;
-              }
-
-              printWindow.document.write(`
-                <html>
-                  <head>
-                    <title>Print PDF</title>
-                    <style>
-                      body {
-                        margin: 0;
-                        padding: 0;
-                        background: white;
-                      }
-                      canvas {
-                        display: block;
-                        width: 100% !important;
-                        height: auto !important;
-                      }
-                    </style>
-                  </head>
-                  <body>${printContainer.innerHTML}</body>
-                </html>
-              `);
-              printWindow.document.close();
-
-              setTimeout(() => {
-                printWindow.focus();
-                printWindow.print();
-                setTimeout(() => {
-                  printWindow.close();
-                  resolve();
-                }, 1500);
-              }, isMobileOrTablet ? 1500 : 800);
             };
 
+            // Ensure the canvas has rendered before printing
             if (isMobileOrTablet) {
               waitUntilCanvasRendered().then(openPrintWindow);
             } else {
-              // Desktop: use native print
-              print.call(window);
-              setTimeout(resolve, 500);
+              openPrintWindow();
             }
           }, 0);
         });
-
-
 
 
     },
