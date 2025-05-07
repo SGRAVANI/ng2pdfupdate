@@ -16363,97 +16363,6 @@
 
 
 
-        // return new Promise(resolve => {
-        //   setTimeout(() => {
-        //     if (!this.active) {
-        //       resolve();
-        //       return;
-        //     }
-
-        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
-
-        //     const printContainer = document.querySelector('#printContainer');
-        //     if (!printContainer) {
-        //       alert("Print container not found.");
-        //       resolve();
-        //       return;
-        //     }
-
-        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
-        //       return new Promise(waitResolve => {
-        //         const start = Date.now();
-        //         const interval = setInterval(() => {
-        //           const canvases = printContainer.querySelectorAll('canvas');
-        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
-
-        //           if (allReady || Date.now() - start > maxWaitMs) {
-        //             clearInterval(interval);
-        //             waitResolve();
-        //           }
-        //         }, 300);
-        //       });
-        //     };
-
-        //     const openPrintWindow = () => {
-        //       if (isMobileOrTablet) {
-        //         const canvases = printContainer.querySelectorAll('canvas');
-        //         canvases.forEach((canvas, index) => {
-        //           canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
-        //         });
-        //       }
-
-        //       const printWindow = window.open('', '_blank');
-        //       if (!printWindow) {
-        //         alert("Popup blocked. Please allow popups.");
-        //         resolve();
-        //         return;
-        //       }
-
-        //       printWindow.document.write(`
-        //         <html>
-        //           <head>
-        //             <title>Print PDF</title>
-        //             <style>
-        //               body {
-        //                 margin: 0;
-        //                 padding: 0;
-        //                 background: white;
-        //               }
-        //               canvas {
-        //                 display: block;
-        //                 width: 100% !important;
-        //                 height: auto !important;
-        //               }
-        //             </style>
-        //           </head>
-        //           <body>${printContainer.innerHTML}</body>
-        //         </html>
-        //       `);
-        //       printWindow.document.close();
-
-        //       setTimeout(() => {
-        //         printWindow.focus();
-        //         printWindow.print();
-        //         setTimeout(() => {
-        //           printWindow.close();
-        //           resolve();
-        //         }, 1500);
-        //       }, isMobileOrTablet ? 1500 : 800);
-        //     };
-
-        //     if (isMobileOrTablet) {
-        //       waitUntilCanvasRendered().then(openPrintWindow);
-        //     } else {
-        //       // Desktop: use native print
-        //       print.call(window);
-        //       setTimeout(resolve, 500);
-        //     }
-        //   }, 0);
-        // });
-
-
-
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16471,7 +16380,6 @@
               return;
             }
 
-            // Wait for canvases to render (if any)
             const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
               return new Promise(waitResolve => {
                 const start = Date.now();
@@ -16487,16 +16395,22 @@
               });
             };
 
-            // Generate the HTML content for printing
-            const getPrintContent = () => {
-              const canvases = printContainer.querySelectorAll('canvas');
-              const images: string[] = [];
-              canvases.forEach(canvas => {
-                const dataUrl = canvas.toDataURL('image/png');
-                images.push(`<img src="${dataUrl}" style="display:block;width:100%;page-break-after:always;" />`);
-              });
+            const openPrintWindow = () => {
+              if (isMobileOrTablet) {
+                const canvases = printContainer.querySelectorAll('canvas');
+                canvases.forEach((canvas, index) => {
+                  canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+                });
+              }
 
-              return `
+              const printWindow = window.open('', '_blank');
+              if (!printWindow) {
+                alert("Popup blocked. Please allow popups.");
+                resolve();
+                return;
+              }
+
+              printWindow.document.write(`
                 <html>
                   <head>
                     <title>Print PDF</title>
@@ -16504,60 +16418,42 @@
                       body {
                         margin: 0;
                         padding: 0;
+                        background: white;
+                      }
+                      canvas {
+                        display: block;
+                        width: 100% !important;
+                        height: auto !important;
                       }
                     </style>
                   </head>
-                  <body>${images.join('')}</body>
+                  <body>${printContainer.innerHTML}</body>
                 </html>
-              `;
-            };
+              `);
+              printWindow.document.close();
 
-            // Open the print dialog using iframe
-            const openPrintWindow = () => {
-              const iframe = document.createElement('iframe');
-              iframe.style.position = 'fixed';
-              iframe.style.right = '0';
-              iframe.style.bottom = '0';
-              iframe.style.width = '0';
-              iframe.style.height = '0';
-              iframe.style.border = '0';
-              document.body.appendChild(iframe);
-
-              // Write content to iframe
-              const doc = iframe.contentWindow?.document;
-              if (!doc) {
-                alert("Failed to open iframe.");
-                resolve();
-                return;
-              }
-
-              doc.open();
-              doc.write(getPrintContent());
-              doc.close();
-
-              // Wait for iframe content to load and then trigger print
-              iframe.onload = () => {
-                iframe.contentWindow?.focus();
-                iframe.contentWindow?.print();
-
-                // Optional: Remove iframe after printing
+              setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
                 setTimeout(() => {
-                  document.body.removeChild(iframe);
+                  printWindow.close();
                   resolve();
-                }, 2000);
-              };
+                }, 1500);
+              }, isMobileOrTablet ? 1500 : 800);
             };
 
             if (isMobileOrTablet) {
-              // For mobile/tablet: wait until canvases are rendered and then open print
               waitUntilCanvasRendered().then(openPrintWindow);
             } else {
-              // For desktop: directly print without iframe
+              // Desktop: use native print
               print.call(window);
               setTimeout(resolve, 500);
             }
           }, 0);
         });
+
+
+
 
     },
 
