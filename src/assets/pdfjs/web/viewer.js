@@ -16358,6 +16358,99 @@
         //     }
         //   }, 0);
         // });
+
+
+
+
+
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+        //     const printContainer = document.querySelector('#printContainer');
+        //     if (!printContainer) {
+        //       alert("Print container not found.");
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+        //       return new Promise(waitResolve => {
+        //         const start = Date.now();
+        //         const interval = setInterval(() => {
+        //           const canvases = printContainer.querySelectorAll('canvas');
+        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+        //           if (allReady || Date.now() - start > maxWaitMs) {
+        //             clearInterval(interval);
+        //             waitResolve();
+        //           }
+        //         }, 300);
+        //       });
+        //     };
+
+        //     const openPrintWindow = () => {
+        //       if (isMobileOrTablet) {
+        //         const canvases = printContainer.querySelectorAll('canvas');
+        //         canvases.forEach((canvas, index) => {
+        //           canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+        //         });
+        //       }
+
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked. Please allow popups.");
+        //         resolve();
+        //         return;
+        //       }
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, isMobileOrTablet ? 1500 : 800);
+        //     };
+
+        //     if (isMobileOrTablet) {
+        //       waitUntilCanvasRendered().then(openPrintWindow);
+        //     } else {
+        //       // Desktop: use native print
+        //       print.call(window);
+        //       setTimeout(resolve, 500);
+        //     }
+        //   }, 0);
+        // });
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16391,12 +16484,18 @@
             };
 
             const openPrintWindow = () => {
-              if (isMobileOrTablet) {
-                const canvases = printContainer.querySelectorAll('canvas');
-                canvases.forEach((canvas, index) => {
-                  canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
-                });
-              }
+              const canvases = printContainer.querySelectorAll('canvas');
+              const images = [];
+
+              // Convert canvas to image for better compatibility
+              canvases.forEach((canvas, index) => {
+                const img = document.createElement('img');
+                img.src = canvas.toDataURL('image/png');
+                img.style.display = 'block';
+                img.style.width = '100%';
+                img.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+                images.push(img);
+              });
 
               const printWindow = window.open('', '_blank');
               if (!printWindow) {
@@ -16415,26 +16514,39 @@
                         padding: 0;
                         background: white;
                       }
-                      canvas {
+                      img {
                         display: block;
-                        width: 100% !important;
-                        height: auto !important;
+                        width: 100%;
+                        height: auto;
+                        page-break-after: always;
                       }
                     </style>
                   </head>
-                  <body>${printContainer.innerHTML}</body>
+                  <body></body>
                 </html>
               `);
               printWindow.document.close();
 
-              setTimeout(() => {
-                printWindow.focus();
-                printWindow.print();
-                setTimeout(() => {
-                  printWindow.close();
-                  resolve();
-                }, 1500);
-              }, isMobileOrTablet ? 1500 : 800);
+              // Delay and then append images
+              const appendImagesAndPrint = () => {
+                const interval = setInterval(() => {
+                  if (printWindow.document.body) {
+                    clearInterval(interval);
+                    images.forEach(img => printWindow.document.body.appendChild(img));
+
+                    setTimeout(() => {
+                      printWindow.focus();
+                      printWindow.print();
+                      setTimeout(() => {
+                        printWindow.close();
+                        resolve();
+                      }, 1500);
+                    }, 1000);
+                  }
+                }, 100);
+              };
+
+              appendImagesAndPrint();
             };
 
             if (isMobileOrTablet) {
@@ -16446,6 +16558,7 @@
             }
           }, 0);
         });
+
 
     },
 
