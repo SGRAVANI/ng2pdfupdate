@@ -16452,6 +16452,104 @@
         //   }, 0);
         // });
 
+        // return new Promise(resolve => {
+        //   setTimeout(() => {
+        //     if (!this.active) {
+        //       resolve();
+        //       return;
+        //     }
+
+        //     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        //     const isMobileOrTablet = /Mobi|Tablet|iPad|iPhone|Android/i.test(userAgent);
+
+        //     const printContainer = document.querySelector('#printContainer');
+        //     if (!printContainer) {
+        //       alert("Print container not found.");
+        //       resolve();
+        //       return;
+        //     }
+
+        //     // Log for debugging
+        //     console.log("User Agent: ", navigator.userAgent);
+        //     console.log("Is Mobile or Tablet: ", isMobileOrTablet);
+
+        //     // Function to check if all canvases are rendered
+        //     const waitUntilCanvasRendered = (maxWaitMs = 8000) => {
+        //       return new Promise(waitResolve => {
+        //         const start = Date.now();
+        //         const interval = setInterval(() => {
+        //           const canvases = printContainer.querySelectorAll('canvas');
+        //           const allReady = Array.from(canvases).every(canvas => canvas.height > 0);
+
+        //           if (allReady || Date.now() - start > maxWaitMs) {
+        //             clearInterval(interval);
+        //             console.log("All canvases are rendered.");
+        //             waitResolve();
+        //           }
+        //         }, 300);
+        //       });
+        //     };
+
+        //     // Function to handle printing on mobile/tablet
+        //     const openPrintWindow = () => {
+        //       if (isMobileOrTablet) {
+        //         // Handle canvas page break for mobile
+        //         const canvases = printContainer.querySelectorAll('canvas');
+        //         canvases.forEach((canvas, index) => {
+        //           canvas.style.pageBreakAfter = index !== canvases.length - 1 ? 'always' : 'auto';
+        //         });
+        //       }
+
+        //       const printWindow = window.open('', '_blank');
+        //       if (!printWindow) {
+        //         alert("Popup blocked. Please allow popups.");
+        //         console.log("Popup block detected on this device.");
+        //         resolve();
+        //         return;
+        //       }
+        //       console.log("Popup opened successfully.");
+
+        //       printWindow.document.write(`
+        //         <html>
+        //           <head>
+        //             <title>Print PDF</title>
+        //             <style>
+        //               body {
+        //                 margin: 0;
+        //                 padding: 0;
+        //                 background: white;
+        //               }
+        //               canvas {
+        //                 display: block;
+        //                 width: 100% !important;
+        //                 height: auto !important;
+        //               }
+        //             </style>
+        //           </head>
+        //           <body>${printContainer.innerHTML}</body>
+        //         </html>
+        //       `);
+        //       printWindow.document.close();
+
+        //       setTimeout(() => {
+        //         printWindow.focus();
+        //         printWindow.print();
+        //         setTimeout(() => {
+        //           printWindow.close();
+        //           resolve();
+        //         }, 1500);
+        //       }, isMobileOrTablet ? 1500 : 800);
+        //     };
+
+        //     // Ensure the canvas is ready before opening the print window
+        //     if (isMobileOrTablet) {
+        //       waitUntilCanvasRendered(15000).then(openPrintWindow); // Increased timeout to 15 seconds
+        //     } else {
+        //       openPrintWindow();
+        //     }
+        //   }, 0);
+        // });
+
         return new Promise(resolve => {
           setTimeout(() => {
             if (!this.active) {
@@ -16549,7 +16647,6 @@
             }
           }, 0);
         });
-
 
     },
 
